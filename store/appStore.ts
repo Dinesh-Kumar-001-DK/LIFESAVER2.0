@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface EmergencyContact {
   id: string;
@@ -11,7 +11,7 @@ export interface AlertRecord {
   timestamp: Date;
   location: string | null;
   contactsNotified: string[];
-  triggerType: 'Button' | 'Shake' | 'Volume' | 'Voice' | 'Fall';
+  triggerType: "Button" | "Shake" | "Volume" | "Voice" | "Fall";
   duration: number;
   recordingPath?: string;
 }
@@ -27,6 +27,7 @@ export interface Settings {
   fallDetectionEnabled: boolean;
   autoRecordEnabled: boolean;
   useFrontCamera: boolean;
+  testMode: boolean;
 }
 
 interface AppState {
@@ -47,7 +48,7 @@ interface AppState {
 
   updateSettings: (settings: Partial<Settings>) => void;
 
-  addAlertToHistory: (alert: Omit<AlertRecord, 'id' | 'timestamp'>) => void;
+  addAlertToHistory: (alert: Omit<AlertRecord, "id" | "timestamp">) => void;
   clearAlertHistory: () => void;
   setLastLocation: (location: string) => void;
 
@@ -65,12 +66,13 @@ const DEFAULT_SETTINGS: Settings = {
   fallDetectionEnabled: false,
   autoRecordEnabled: false,
   useFrontCamera: true,
+  testMode: false,
 };
 
 const DEFAULT_EMERGENCY_NUMBERS = [
-  { id: '1', name: 'Police', phone: '100' },
-  { id: '2', name: 'Ambulance', phone: '108' },
-  { id: '3', name: 'National Emergency', phone: '112' },
+  { id: "1", name: "Police", phone: "8610050976" },
+  { id: "2", name: "Ambulance", phone: "8610050976" },
+  { id: "3", name: "National Emergency", phone: "8610050976" },
 ];
 
 export const useAppStore = create<AppState>()((set) => ({
@@ -102,7 +104,7 @@ export const useAppStore = create<AppState>()((set) => ({
   updateContact: (id, updates) =>
     set((state) => ({
       emergencyContacts: state.emergencyContacts.map((c) =>
-        c.id === id ? { ...c, ...updates } : c
+        c.id === id ? { ...c, ...updates } : c,
       ),
     })),
 

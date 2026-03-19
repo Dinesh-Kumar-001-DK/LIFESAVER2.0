@@ -243,6 +243,31 @@ export default function SettingsScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
+
+          <View style={[styles.settingRow, settings.testMode && styles.testModeRow]}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="bug" size={22} color="#FF9500" />
+              <View>
+                <Text style={styles.settingLabel}>Test Mode</Text>
+                <Text style={styles.settingSubLabel}>Disables alarm, SMS & calls</Text>
+              </View>
+            </View>
+            <Switch
+              value={settings.testMode}
+              onValueChange={(value) => {
+                updateSettings({ testMode: value });
+                if (value) {
+                  Alert.alert(
+                    'Test Mode Enabled',
+                    'SOS button will not trigger actual alarm, SMS or calls. Use this to test the UI safely.',
+                    [{ text: 'OK' }]
+                  );
+                }
+              }}
+              trackColor={{ false: '#3A3A3C', true: '#FF9500' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -457,6 +482,14 @@ const styles = StyleSheet.create({
   settingLabel: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  settingSubLabel: {
+    color: '#8E8E93',
+    fontSize: 12,
+  },
+  testModeRow: {
+    borderWidth: 1,
+    borderColor: '#FF9500',
   },
   addButton: {
     flexDirection: 'row',

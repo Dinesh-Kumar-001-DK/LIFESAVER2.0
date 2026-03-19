@@ -46,6 +46,12 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <Text style={styles.logo}>TapSafe</Text>
         <Text style={styles.tagline}>Help in 3 Clicks</Text>
+        {settings.testMode && (
+          <View style={styles.testModeBadge}>
+            <Ionicons name="bug" size={14} color="#FF9500" />
+            <Text style={styles.testModeText}>TEST MODE</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -138,6 +144,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#8E8E93',
     marginTop: 8,
+  },
+  testModeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 149, 0, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 8,
+    gap: 4,
+  },
+  testModeText: {
+    color: '#FF9500',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   content: {
     flex: 1,

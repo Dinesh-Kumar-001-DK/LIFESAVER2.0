@@ -96,6 +96,13 @@ export const triggerService = {
     const store = useAppStore.getState();
     const { settings, emergencyContacts, addAlertToHistory, setAlarmActive, setLastLocation } = store;
 
+    // Check if test mode is enabled
+    if (settings.testMode) {
+      console.log('TEST MODE: SOS triggered but no actions taken');
+      setAlarmActive(true);
+      return;
+    }
+
     setAlarmActive(true);
 
     try {
@@ -156,26 +163,28 @@ export const triggerService = {
   },
 
   async stopSOS(): Promise<void> {
-    const { setAlarmActive } = useAppStore.getState();
+    const { setAlarmActive, settings } = useAppStore.getState();
 
     if (autoStopTimer) {
       clearTimeout(autoStopTimer);
       autoStopTimer = null;
     }
 
-    try {
-      await alarmService.stopAlarm();
-    } catch (error) {
-      console.error('Failed to stop alarm:', error);
-    }
+    if (!settings.testMode) {
+      try {
+        await alarmService.stopAlarm();
+      } catch (error) {
+        console.error('Failed to stop alarm:', error);
+      }
 
-    try {
-      await flashService.stopSOSFlash();
-    } catch (error) {
-      console.error('Failed to stop flash:', error);
-    }
+      try {
+        await flashService.stopSOSFlash();
+      } catch (error) {
+        console.error('Failed to stop flash:', error);
+      }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
 
     setAlarmActive(false);
   },
