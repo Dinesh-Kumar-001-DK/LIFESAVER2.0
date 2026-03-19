@@ -1,0 +1,180 @@
+# TapSafe - User Documentation
+
+## What is TapSafe?
+
+TapSafe is an emergency SOS alert app that helps you get help quickly in emergencies.
+
+**Tagline:** "Help in 3 Clicks"
+
+## How to Use
+
+### 1. Home Screen
+- Large red SOS button in the center
+- Tap the button to trigger SOS
+- Status indicators show which triggers are enabled:
+  - Shake (phone icon)
+  - Volume ×3 (speaker icon)
+  - Voice (mic icon - Pro)
+
+### 2. Settings
+Access by tapping Settings button or navigating to Settings tab.
+
+#### Emergency Contacts
+- Default contacts: Police (100), Ambulance (108), Emergency (112)
+- Add your own contacts (Free: 1 contact, Pro: up to 10)
+- Delete contacts by tapping trash icon
+
+#### Trigger Settings
+| Setting | Description |
+|---------|-------------|
+| Volume Button Trigger | Press volume ×3 to trigger SOS |
+| Shake Trigger | Shake phone ×3 to trigger SOS |
+| Flashlight SOS | Flash Morse code SOS signal |
+| SMS Alerts | Send SMS with location to contacts |
+| Auto Phone Call | Automatically call first contact |
+| Vibration | Vibrate when SOS is triggered |
+
+#### Test Mode Settings
+Use this to safely test the app without triggering real emergencies.
+
+| Toggle | Effect when ON |
+|--------|---------------|
+| Enable Test Mode | Activates test mode |
+| Alarm Sound | Disables alarm in test mode |
+| SMS Alerts | Disables SMS in test mode |
+| Auto Phone Call | Disables calls in test mode |
+
+### 3. History
+View all past SOS alerts with:
+- Date and time
+- Location link (tap to open in Maps)
+- Contacts notified
+- Trigger type (Button/Shake/Volume)
+- Duration
+
+Clear history with "Clear History" button.
+
+## How SOS Works
+
+When you trigger SOS (by any method):
+
+1. **Alarm** - Loud alarm sound plays (overrides silent mode)
+2. **Flash** - Flashlight blinks SOS in Morse code (... --- ...)
+3. **Vibration** - Phone vibrates 5 times
+4. **SMS** - Emergency SMS sent to all contacts with GPS location
+5. **Call** - Auto-call to first contact after 5 seconds (with cancel option)
+6. **Auto-stop** - Alarm stops after 30 seconds
+
+## Trigger Methods
+
+### Manual Button (Always works)
+Simply tap the SOS button on Home screen.
+
+### Shake Trigger
+Shake your phone 3 times within 3 seconds.
+
+### Volume Button Trigger
+Press volume up/down button 3 times within 2 seconds.
+(Note: Requires native code to work fully)
+
+### Voice Trigger (Pro)
+Say "help me", "emergency", "bachao", "madad" or "save me".
+(Must say keyword twice within 3 seconds)
+
+### Fall Detection (Pro)
+Automatically detects if you fall and shows 15-second countdown.
+
+## Pro Features
+
+Upgrade to Pro for:
+- Voice trigger ("Help me")
+- Fall detection with countdown
+- Auto video recording during SOS
+- SMS to 5 contacts (vs 1)
+- Unlimited emergency contacts
+- Auto phone call feature
+
+## Default Emergency Numbers (India)
+- **Police:** 100
+- **Ambulance:** 108
+- **National Emergency:** 112
+
+## Permissions Required
+
+| Permission | Why We Need It |
+|-----------|----------------|
+| Location | To send your GPS coordinates during SOS |
+| Camera | For video recording (Pro feature) |
+| Microphone | For voice trigger (Pro feature) |
+| Contacts | To pick emergency contacts |
+| SMS | To send emergency messages |
+| Phone | To make emergency calls |
+
+## Privacy
+
+- Your location is NEVER stored on our servers
+- All SMS/calls are sent directly from your phone
+- No account required for free version
+- Video recordings stay on YOUR phone only
+- Pro subscription handled by RevenueCat (Apple/Google standards)
+
+## Troubleshooting
+
+### SOS button doesn't work
+- Check if Test Mode is enabled (yellow badge on Home screen)
+- Check if all triggers are enabled in Settings
+
+### Alarm doesn't play sound
+- Check if alarm.mp3 file exists in assets folder
+- Alarm requires native build to work properly
+
+### SMS not sending
+- Check SMS permission is granted
+- Check you have cellular service
+- Check emergency contacts are set up
+
+### App crashes
+- Refresh the app (shake gesture in Expo Go)
+- Check console for errors
+- Report bugs via GitHub issues
+
+## Building for Production
+
+### Prerequisites
+1. Create RevenueCat account and get API keys
+2. Create Sentry account and get DSN
+3. Add alarm.mp3 to assets folder
+
+### Build Commands
+```bash
+# Install dependencies
+npm install
+
+# Development build
+eas build --platform android --profile development
+
+# Preview APK
+eas build --platform android --profile preview
+
+# Production AAB
+eas build --platform android --profile production
+
+# Submit to Play Store
+eas submit --platform android --latest
+```
+
+### Configuration Required
+
+1. **RevenueCat** - Add API keys in `services/revenueCatService.ts`
+2. **Sentry** - Add DSN in `services/crashReportingService.ts`
+3. **alarm.mp3** - Place audio file in `assets/alarm.mp3`
+4. **App Icons** - Add icons in `assets/images/`
+
+## Support
+
+- Report bugs: GitHub Issues
+- Email: support@tapsafe.app
+
+## Version History
+
+- v1.0.0 - Initial release with core SOS features

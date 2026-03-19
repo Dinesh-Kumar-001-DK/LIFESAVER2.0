@@ -1,0 +1,160 @@
+# TapSafe - Implementation Details
+
+## Project Structure
+
+```
+lifesaver/
+├── app/                          # Expo Router pages
+│   ├── _layout.tsx              # Root layout with AlertBanner
+│   ├── paywall.tsx              # Pro subscription screen
+│   └── (tabs)/
+│       ├── _layout.tsx          # Tab navigation (Home, Settings, History)
+│       ├── index.tsx            # Home screen with SOS button
+│       ├── settings.tsx         # Settings & contact management
+│       └── history.tsx          # Alert history log
+├── components/
+│   ├── SOSButton.tsx            # Pulsing SOS button (Animated API)
+│   ├── ContactCard.tsx          # Emergency contact card
+│   └── AlertBanner.tsx         # SOS active banner
+├── services/
+│   ├── alarmService.ts          # expo-av alarm (silent mode override)
+│   ├── flashService.ts          # Morse SOS flashlight
+│   ├── locationService.ts       # GPS + Google Maps link
+│   ├── smsService.ts            # expo-sms emergency alerts
+│   ├── callService.ts           # expo-linking phone calls
+│   ├── triggerService.ts        # Shake detection + SOS orchestration
+│   ├── permissionService.ts     # Permission handling
+│   ├── voiceService.ts          # Pro: voice keyword trigger
+│   ├── fallDetectionService.ts  # Pro: accelerometer fall detection
+│   ├── recordingService.ts      # Pro: video recording
+│   ├── revenueCatService.ts    # Pro subscriptions
+│   └── crashReportingService.ts # Sentry integration
+├── store/
+│   └── appStore.ts              # Zustand store (no persistence for Expo Go)
+├── tasks/
+│   └── backgroundTask.ts        # expo-task-manager background tasks
+├── app.json                     # Full permissions config
+├── eas.json                     # EAS build profiles
+└── PLAY_STORE_INFO.md           # Play Store listing
+```
+
+## Features Implemented
+
+### Phase 1 - SOS Core
+- [x] Home screen with dark theme (#1C1C1E bg, #FF3B30 accent)
+- [x] Pulsing SOS button with Animated API
+- [x] Alarm service with expo-av (silent mode override)
+- [x] Flash service (Morse SOS pattern placeholder)
+- [x] Location service with GPS + Google Maps link
+- [x] SMS service with expo-sms
+- [x] Call service with expo-linking
+- [x] Trigger service with shake detection
+- [x] Volume trigger (framework only, needs native code)
+
+### Phase 2 - Core Features
+- [x] Settings screen with all toggles
+- [x] Contact management (add/delete)
+- [x] Call service with auto-call delay
+- [x] Background task registration
+- [x] History screen with alert log
+- [x] AlertBanner component (visible on all screens)
+- [x] Zustand store with state management
+
+### Phase 3 - Advanced Features (Pro)
+- [x] Voice trigger service (framework)
+- [x] Fall detection service (framework)
+- [x] Video recording service (framework)
+- [x] Pro feature gating
+
+### Phase 4 - Monetization
+- [x] Paywall screen
+- [x] RevenueCat integration (placeholder keys)
+- [x] Pro status management
+
+### Phase 5 - Play Store Prep
+- [x] app.json with all permissions
+- [x] eas.json build profiles
+- [x] Privacy policy template
+- [x] Play Store listing copy
+- [x] Sentry crash reporting (placeholder DSN)
+
+## Store State (appStore.ts)
+
+```typescript
+interface Settings {
+  volumeTriggerEnabled: boolean;    // Volume button trigger
+  shakeTriggerEnabled: boolean;     // Shake trigger
+  smsEnabled: boolean;             // SMS alerts
+  callEnabled: boolean;             // Auto phone call
+  flashEnabled: boolean;            // Flashlight SOS
+  vibrationEnabled: boolean;        // Vibration
+  voiceTriggerEnabled: boolean;     // Pro: Voice trigger
+  fallDetectionEnabled: boolean;   // Pro: Fall detection
+  autoRecordEnabled: boolean;      // Pro: Auto video recording
+  useFrontCamera: boolean;        // Pro: Camera preference
+  testMode: boolean;              // Test mode master switch
+  testAlarm: boolean;             // Test: disable alarm
+  testSMS: boolean;               // Test: disable SMS
+  testCalls: boolean;             // Test: disable calls
+}
+
+interface AppState {
+  emergencyContacts: EmergencyContact[];
+  isAlarmActive: boolean;
+  settings: Settings;
+  lastAlertTime: Date | null;
+  lastLocation: string | null;
+  alertHistory: AlertRecord[];
+  isPro: boolean;
+  subscriptionExpiry: Date | null;
+}
+```
+
+## Test Mode Logic
+
+When Test Mode is enabled, each toggle controls what is DISABLED:
+
+| Toggle | When ON | Effect |
+|--------|---------|--------|
+| Enable Test Mode | Master switch | Activates test mode |
+| Alarm Sound | Disables | Alarm won't play |
+| SMS Alerts | Disables | SMS won't send |
+| Auto Phone Call | Disables | Call won't happen |
+
+## Color Theme
+
+- Primary: #FF3B30 (Red)
+- Background: #1C1C1E (Dark)
+- Card: #2C2C2E (Dark Gray)
+- Text: #FFFFFF (White)
+- Text Secondary: #8E8E93 (Gray)
+- Success: #4CD964 (Green)
+- Warning: #FF9500 (Orange)
+- Pro: #FFD700 (Gold)
+
+## Packages Installed
+
+- expo-av (Audio)
+- expo-location (GPS)
+- expo-sms (SMS)
+- expo-camera (Camera)
+- expo-task-manager (Background)
+- expo-background-fetch (Background)
+- expo-linking (Phone calls)
+- expo-sensors (Accelerometer)
+- zustand (State management)
+- @react-native-async-storage/async-storage (Storage - not used in Expo Go)
+- expo-contacts (Contacts)
+- expo-media-library (Media)
+- @react-native-voice/voice (Voice recognition)
+- react-native-purchases (RevenueCat)
+- @sentry/react-native (Crash reporting)
+
+## Notes
+
+1. AsyncStorage persistence is disabled because it requires native build
+2. Volume button detection needs native code implementation
+3. Flash service uses placeholder (CameraView required for torch)
+4. Voice trigger needs native voice recognition setup
+5. Fall detection uses accelerometer algorithm
+6. All Pro features have UI but need RevenueCat setup for real purchases
