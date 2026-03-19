@@ -13,38 +13,50 @@ export const alarmService = {
       });
 
       if (alarmSound) {
-        await alarmSound.unloadAsync();
+        try {
+          await alarmSound.unloadAsync();
+        } catch (e) {
+          // Ignore
+        }
+        alarmSound = null;
       }
 
-      const { sound } = await Audio.Sound.createAsync(
-        require('../assets/alarm.mp3'),
-        {
-          isLooping: true,
-          volume: 1.0,
-          shouldPlay: true,
-        }
-      );
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../assets/alarm.mp3'),
+          {
+            isLooping: true,
+            volume: 1.0,
+            shouldPlay: true,
+          }
+        );
 
-      alarmSound = sound;
+        alarmSound = sound;
 
-      sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
-        if (!status.isLoaded) {
-          console.error('Audio playback error:', status.error);
-        }
-      });
+        sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
+          if (!status.isLoaded) {
+            console.warn('Audio playback status:', status.error);
+          }
+        });
 
-      await sound.playAsync();
+        await sound.playAsync();
+      } catch (audioError) {
+        console.warn('Could not load alarm sound:', audioError);
+      }
     } catch (error) {
-      console.error('Error playing alarm:', error);
-      throw error;
+      console.warn('Error playing alarm:', error);
     }
   },
 
   async stopAlarm(): Promise<void> {
     try {
       if (alarmSound) {
-        await alarmSound.stopAsync();
-        await alarmSound.unloadAsync();
+        try {
+          await alarmSound.stopAsync();
+          await alarmSound.unloadAsync();
+        } catch (e) {
+          // Ignore
+        }
         alarmSound = null;
       }
 
@@ -53,14 +65,17 @@ export const alarmService = {
         staysActiveInBackground: false,
       });
     } catch (error) {
-      console.error('Error stopping alarm:', error);
-      throw error;
+      console.warn('Error stopping alarm:', error);
     }
   },
 
   async isAlarmPlaying(): Promise<boolean> {
     if (!alarmSound) return false;
-    const status = await alarmSound.getStatusAsync();
-    return status.isLoaded && status.isPlaying;
+    try {
+      const status = await alarmSound.getStatusAsync();
+      return status.isLoaded && status.isPlaying;
+    } catch {
+      return false;
+    }
   },
 };
