@@ -14,20 +14,22 @@ import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const isAlarmActive = useAppStore((state) => state.isAlarmActive);
-  const settings = useAppStore((state) => state.settings);
+  const shakeTriggerEnabled = useAppStore((state) => state.settings.shakeTriggerEnabled);
   const router = useRouter();
 
   useEffect(() => {
-    if (settings.shakeTriggerEnabled) {
+    if (shakeTriggerEnabled) {
       triggerService.startTriggerListeners(() => {
         triggerService.triggerSOS('Shake');
       });
+    } else {
+      triggerService.stopTriggerListeners();
     }
 
     return () => {
       triggerService.stopTriggerListeners();
     };
-  }, [settings.shakeTriggerEnabled]);
+  }, [shakeTriggerEnabled]);
 
   const handleSOSPress = async () => {
     if (isAlarmActive) {
@@ -54,16 +56,16 @@ export default function HomeScreen() {
           />
           
           {!isAlarmActive && (
-            <Text style={styles.hint}>Tap or press volume × 3</Text>
+            <Text style={styles.hint}>Tap SOS button or shake phone ×3</Text>
           )}
         </View>
 
         <View style={styles.statusRow}>
           <View style={styles.statusItem}>
             <Ionicons
-              name={settings.shakeTriggerEnabled ? 'phone-portrait' : 'phone-portrait-outline'}
+              name={shakeTriggerEnabled ? 'phone-portrait' : 'phone-portrait-outline'}
               size={20}
-              color={settings.shakeTriggerEnabled ? '#4CD964' : '#8E8E93'}
+              color={shakeTriggerEnabled ? '#4CD964' : '#8E8E93'}
             />
             <Text style={styles.statusText}>Shake</Text>
           </View>
