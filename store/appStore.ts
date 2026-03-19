@@ -28,6 +28,9 @@ export interface Settings {
   autoRecordEnabled: boolean;
   useFrontCamera: boolean;
   testMode: boolean;
+  testAlarm: boolean;
+  testSMS: boolean;
+  testCalls: boolean;
 }
 
 interface AppState {
@@ -67,6 +70,9 @@ const DEFAULT_SETTINGS: Settings = {
   autoRecordEnabled: false,
   useFrontCamera: true,
   testMode: false,
+  testAlarm: false,
+  testSMS: false,
+  testCalls: false,
 };
 
 const DEFAULT_EMERGENCY_NUMBERS = [

@@ -103,19 +103,17 @@ export const triggerService = {
     const store = useAppStore.getState();
     const { settings, emergencyContacts, addAlertToHistory, setAlarmActive, setLastLocation } = store;
 
-    // Check if test mode is enabled
-    if (settings.testMode) {
-      console.log('TEST MODE: SOS triggered but no actions taken');
-      setAlarmActive(true);
-      return;
-    }
-
     setAlarmActive(true);
 
-    try {
-      await alarmService.playAlarm();
-    } catch (error) {
-      console.error('Failed to play alarm:', error);
+    // Alarm - check if not disabled by test mode
+    if (settings.testMode && !settings.testAlarm) {
+      console.log('TEST MODE: Alarm disabled');
+    } else {
+      try {
+        await alarmService.playAlarm();
+      } catch (error) {
+        console.error('Failed to play alarm:', error);
+      }
     }
 
     if (settings.flashEnabled) {
@@ -137,10 +135,15 @@ export const triggerService = {
       console.error('Failed to get location:', error);
     }
 
+    // SMS - check if not disabled by test mode
     if (settings.smsEnabled) {
-      const contacts = emergencyContacts.map(c => c.phone);
-      const smsResult = await smsService.sendEmergencySMS(contacts);
-      console.log('SMS result:', smsResult);
+      if (settings.testMode && !settings.testSMS) {
+        console.log('TEST MODE: SMS disabled');
+      } else {
+        const contacts = emergencyContacts.map(c => c.phone);
+        const smsResult = await smsService.sendEmergencySMS(contacts);
+        console.log('SMS result:', smsResult);
+      }
     }
 
     addAlertToHistory({
@@ -150,13 +153,18 @@ export const triggerService = {
       duration: 0,
     });
 
+    // Calls - check if not disabled by test mode
     if (settings.callEnabled) {
-      callService.autoCallWithDelay(
-        emergencyContacts.map(c => c.phone),
-        5000,
-        (seconds) => console.log(`Calling in ${seconds}...`),
-        () => console.log('Call cancelled')
-      );
+      if (settings.testMode && !settings.testCalls) {
+        console.log('TEST MODE: Calls disabled');
+      } else {
+        callService.autoCallWithDelay(
+          emergencyContacts.map(c => c.phone),
+          5000,
+          (seconds) => console.log(`Calling in ${seconds}...`),
+          () => console.log('Call cancelled')
+        );
+      }
     }
 
     autoStopTimer = setTimeout(async () => {
@@ -177,7 +185,8 @@ export const triggerService = {
       autoStopTimer = null;
     }
 
-    if (!settings.testMode) {
+    // Stop alarm if not in test mode or if alarm is enabled in test mode
+    if (!settings.testMode || settings.testAlarm) {
       try {
         await alarmService.stopAlarm();
       } catch (error) {
