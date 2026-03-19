@@ -1,98 +1,201 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { SOSButton } from '../../components/SOSButton';
+import { useAppStore } from '../../store/appStore';
+import { triggerService } from '../../services/triggerService';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const isAlarmActive = useAppStore((state) => state.isAlarmActive);
+  const settings = useAppStore((state) => state.settings);
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  useEffect(() => {
+    if (settings.shakeTriggerEnabled) {
+      triggerService.startTriggerListeners(() => {
+        triggerService.triggerSOS('Shake');
+      });
+    }
+
+    return () => {
+      triggerService.stopTriggerListeners();
+    };
+  }, [settings.shakeTriggerEnabled]);
+
+  const handleSOSPress = async () => {
+    if (isAlarmActive) {
+      await triggerService.stopSOS();
+    } else {
+      await triggerService.triggerSOS('Button');
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      
+      <View style={styles.header}>
+        <Text style={styles.logo}>TapSafe</Text>
+        <Text style={styles.tagline}>Help in 3 Clicks</Text>
+      </View>
+
+      <View style={styles.content}>
+        <View style={styles.buttonContainer}>
+          <SOSButton
+            isActive={isAlarmActive}
+            onPress={handleSOSPress}
+            size={200}
+          />
+          
+          {!isAlarmActive && (
+            <Text style={styles.hint}>Tap or press volume × 3</Text>
+          )}
+        </View>
+
+        <View style={styles.statusRow}>
+          <View style={styles.statusItem}>
+            <Ionicons
+              name={settings.shakeTriggerEnabled ? 'phone-portrait' : 'phone-portrait-outline'}
+              size={20}
+              color={settings.shakeTriggerEnabled ? '#4CD964' : '#8E8E93'}
+            />
+            <Text style={styles.statusText}>Shake</Text>
+          </View>
+          
+          <View style={styles.statusItem}>
+            <Ionicons
+              name={settings.volumeTriggerEnabled ? 'volume-high' : 'volume-mute'}
+              size={20}
+              color={settings.volumeTriggerEnabled ? '#4CD964' : '#8E8E93'}
+            />
+            <Text style={styles.statusText}>Volume ×3</Text>
+          </View>
+          
+          {settings.voiceTriggerEnabled && (
+            <View style={styles.statusItem}>
+              <Ionicons name="mic" size={20} color="#4CD964" />
+              <Text style={styles.statusText}>Voice</Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => router.push('/(tabs)/settings')}
+        >
+          <View style={styles.navPill}>
+            <Ionicons name="settings-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.navText}>Settings</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => router.push('/(tabs)/history')}
+        >
+          <View style={styles.navPill}>
+            <Ionicons name="time-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.navText}>History</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {isAlarmActive && (
+        <View style={styles.activeBorder} />
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#1C1C1E',
+  },
+  header: {
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  logo: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  tagline: {
+    fontSize: 16,
+    color: '#8E8E93',
+    marginTop: 8,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+  },
+  hint: {
+    color: '#8E8E93',
+    fontSize: 14,
+    marginTop: 24,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 40,
+    gap: 24,
+  },
+  statusItem: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  statusText: {
+    color: '#8E8E93',
+    fontSize: 12,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  navButton: {
+    flex: 1,
+  },
+  navPill: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2C2C2E',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 25,
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  activeBorder: {
     position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderWidth: 4,
+    borderColor: '#FF3B30',
+    pointerEvents: 'none',
   },
 });

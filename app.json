@@ -1,25 +1,64 @@
 {
   "expo": {
-    "name": "lifesaver",
-    "slug": "lifesaver",
+    "name": "TapSafe",
+    "slug": "tapsafe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "lifesaver",
-    "userInterfaceStyle": "automatic",
+    "scheme": "tapsafe",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1C1C1E"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tapsafe.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "TapSafe needs your location to send emergency alerts with your current position.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "TapSafe needs background location access to track your position during emergencies even when the app is closed.",
+        "NSLocationAlwaysUsageDescription": "TapSafe needs background location access to track your position during emergencies even when the app is closed.",
+        "NSCameraUsageDescription": "TapSafe uses the camera for silent video recording during emergencies.",
+        "NSMicrophoneUsageDescription": "TapSafe needs microphone access for voice trigger detection and emergency video recording.",
+        "NSContactsUsageDescription": "TapSafe needs access to your contacts to add emergency contacts quickly.",
+        "UIBackgroundModes": [
+          "audio",
+          "fetch",
+          "location",
+          "processing"
+        ],
+        "BGTaskSchedulerPermittedIdentifiers": [
+          "TAPSAFE_BACKGROUND"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#FF3B30"
       },
+      "package": "com.tapsafe.app",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "SEND_SMS",
+        "READ_CONTACTS",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "MODIFY_AUDIO_SETTINGS",
+        "FLASHLIGHT",
+        "CALL_PHONE"
+      ]
     },
     "web": {
       "output": "static",
@@ -33,10 +72,59 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#1C1C1E",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#1C1C1E"
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "TapSafe needs your location to send emergency alerts with your current position.",
+          "locationAlwaysPermission": "TapSafe needs background location access to track your position during emergencies.",
+          "locationWhenInUsePermission": "TapSafe needs your location to send emergency alerts with your current position."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "TapSafe needs microphone access for voice trigger detection and emergency recording."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "TapSafe uses the camera for silent video recording during emergencies.",
+          "microphonePermission": "TapSafe needs microphone access for emergency video recording."
+        }
+      ],
+      "expo-contacts",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "TapSafe saves emergency recordings to your photo library.",
+          "savePhotosPermission": "TapSafe saves emergency recordings to your photo library."
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionUsageDescription": "TapSafe uses motion sensors for fall detection."
+        }
+      ],
+      [
+        "expo-task-manager",
+        {
+          "ios": {
+            "url": "tapsafe://background"
+          }
+        }
+      ],
+      [
+        "expo-background-fetch",
+        {
+          "minimumInterval": 60
         }
       ]
     ],
