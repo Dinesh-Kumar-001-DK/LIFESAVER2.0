@@ -14,7 +14,8 @@ import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const isAlarmActive = useAppStore((state) => state.isAlarmActive);
-  const shakeTriggerEnabled = useAppStore((state) => state.settings.shakeTriggerEnabled);
+  const settings = useAppStore((state) => state.settings);
+  const shakeTriggerEnabled = settings.shakeTriggerEnabled;
   const router = useRouter();
 
   useEffect(() => {
