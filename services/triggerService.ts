@@ -153,8 +153,9 @@ export const triggerService = {
       duration: 0,
     });
 
-    // Calls - skip if testMode ON AND testCalls toggle is ON (means disable calls)
-    if (settings.callEnabled) {
+    // Calls - Only for Pro users
+    const { isPro } = store;
+    if (isPro && settings.callEnabled) {
       if (settings.testMode && settings.testCalls) {
         console.log('TEST MODE: Calls DISABLED');
       } else {

@@ -208,28 +208,34 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Ionicons name="call" size={22} color="#8E8E93" />
-              <Text style={styles.settingLabel}>Auto Phone Call</Text>
-              {!isPro && (
-                <Ionicons name="lock-closed" size={14} color="#FFD700" />
-              )}
+          {isPro ? (
+            <View style={styles.settingRow}>
+              <View style={styles.settingInfo}>
+                <Ionicons name="call" size={22} color="#4CD964" />
+                <Text style={styles.settingLabel}>Auto Phone Call</Text>
+              </View>
+              <Switch
+                value={settings.callEnabled}
+                onValueChange={(value) => updateSettings({ callEnabled: value })}
+                trackColor={{ false: '#3A3A3C', true: '#4CD964' }}
+                thumbColor="#FFFFFF"
+              />
             </View>
-            <Switch
-              value={settings.callEnabled}
-              onValueChange={(value) => {
-                if (!isPro) {
-                  router.push('/paywall');
-                  return;
-                }
-                updateSettings({ callEnabled: value });
-              }}
-              trackColor={{ false: '#3A3A3C', true: '#4CD964' }}
-              thumbColor="#FFFFFF"
-              disabled={!isPro}
-            />
-          </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => router.push('/paywall')}
+            >
+              <View style={styles.settingInfo}>
+                <Ionicons name="call" size={22} color="#8E8E93" />
+                <View>
+                  <Text style={styles.settingLabel}>Auto Phone Call</Text>
+                  <Text style={styles.lockedLabel}>Pro Only</Text>
+                </View>
+              </View>
+              <Ionicons name="lock-closed" size={20} color="#FFD700" />
+            </TouchableOpacity>
+          )}
 
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
@@ -528,6 +534,11 @@ const styles = StyleSheet.create({
   settingLabel: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  lockedLabel: {
+    color: '#FFD700',
+    fontSize: 12,
+    fontWeight: '500',
   },
   settingSubLabel: {
     color: '#8E8E93',
