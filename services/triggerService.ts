@@ -73,6 +73,13 @@ export const triggerService = {
   },
 
   onVolumePress(onTrigger: () => void): void {
+    const { settings } = useAppStore.getState();
+    
+    if (!settings.volumeTriggerEnabled) {
+      console.log('Volume trigger is disabled');
+      return;
+    }
+    
     const now = Date.now();
     
     if (now - lastVolumePressTime > VOLUME_PRESS_TIMEOUT) {
