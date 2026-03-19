@@ -105,9 +105,9 @@ export const triggerService = {
 
     setAlarmActive(true);
 
-    // Alarm - check if not disabled by test mode
-    if (settings.testMode && !settings.testAlarm) {
-      console.log('TEST MODE: Alarm disabled');
+    // Alarm - skip if testMode ON AND testAlarm toggle is ON (means disable alarm)
+    if (settings.testMode && settings.testAlarm) {
+      console.log('TEST MODE: Alarm DISABLED');
     } else {
       try {
         await alarmService.playAlarm();
@@ -135,10 +135,10 @@ export const triggerService = {
       console.error('Failed to get location:', error);
     }
 
-    // SMS - check if not disabled by test mode
+    // SMS - skip if testMode ON AND testSMS toggle is ON (means disable SMS)
     if (settings.smsEnabled) {
-      if (settings.testMode && !settings.testSMS) {
-        console.log('TEST MODE: SMS disabled');
+      if (settings.testMode && settings.testSMS) {
+        console.log('TEST MODE: SMS DISABLED');
       } else {
         const contacts = emergencyContacts.map(c => c.phone);
         const smsResult = await smsService.sendEmergencySMS(contacts);
@@ -153,10 +153,10 @@ export const triggerService = {
       duration: 0,
     });
 
-    // Calls - check if not disabled by test mode
+    // Calls - skip if testMode ON AND testCalls toggle is ON (means disable calls)
     if (settings.callEnabled) {
-      if (settings.testMode && !settings.testCalls) {
-        console.log('TEST MODE: Calls disabled');
+      if (settings.testMode && settings.testCalls) {
+        console.log('TEST MODE: Calls DISABLED');
       } else {
         callService.autoCallWithDelay(
           emergencyContacts.map(c => c.phone),
@@ -185,8 +185,8 @@ export const triggerService = {
       autoStopTimer = null;
     }
 
-    // Stop alarm if not in test mode or if alarm is enabled in test mode
-    if (!settings.testMode || settings.testAlarm) {
+    // Stop alarm if not disabled by test mode
+    if (!(settings.testMode && settings.testAlarm)) {
       try {
         await alarmService.stopAlarm();
       } catch (error) {
